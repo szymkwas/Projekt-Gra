@@ -18,8 +18,8 @@ public:
     kulka():sf::CircleShape(){}
 
     sf::FloatRect get_bounds(){
-                return getGlobalBounds();
-            }
+        return getGlobalBounds();
+    }
     void setvxs(float vx1)
     {
         vx=vx1;
@@ -33,7 +33,7 @@ public:
         move(vx*d,vy*d);
         if(get_bounds().top+get_bounds().height>600)
         {
-        vy=-abs(vy);
+            vy=-abs(vy);
 
         }
         else if(get_bounds().top<0)
@@ -58,6 +58,7 @@ class player:public sf::Sprite
 private:
     float v_y_;
     float v_x_;
+    vector<kulka> s;
 public:
     player():sf::Sprite(){}
 
@@ -71,11 +72,6 @@ public:
     }
     void step(float d,player &p,vector<kulka>&s)
     {
-        for (int i=0;i<s.size();i++) {
-
-
-        if(s[i].getGlobalBounds().intersects(p.getGlobalBounds())==false)
-        {
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)&& p.getGlobalBounds().top+p.getGlobalBounds().height<600)
                 {
                     p.move(0,v_y_*d);
@@ -83,7 +79,7 @@ public:
                 }
                 else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)&&p.getGlobalBounds().top>0)
                 {
-                     p.move(0,-v_y_*d);
+                    p.move(0,-v_y_*d);
 
                 }
                 else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)&&p.getGlobalBounds().left>0)
@@ -93,28 +89,10 @@ public:
                 }
                 else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)&&p.getGlobalBounds().left+p.getGlobalBounds().width<800)
                 {
-                     p.move(v_x_*d,0);
+                    p.move(v_x_*d,0);
 
                 }
-        }
-        else
-        {
-                p.setPosition(0,0);
-        }
-
-        }
-    }
-
-    bool win(sf::Sprite &r1)
-    {
-        if(r1.getGlobalBounds().intersects(getGlobalBounds()))
-        {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
+            }
 };
 
 
@@ -128,15 +106,15 @@ int main()
     sf::RenderWindow window(sf::VideoMode(800, 600), "The hardest game");
     sf::Clock clock;
     sf::Texture texture;
-        if (!texture.loadFromFile("hero.png")) {
-            std::cerr << "Could not load texture" << std::endl;
-            return 1;
-        }
-          sf::Texture texture2;
-                if (!texture2.loadFromFile("Meta.png")) {
-                      std::cerr << "Could not load texture" << std::endl;
-                      return 1;
-                  }
+    if (!texture.loadFromFile("hero.png")) {
+        std::cerr << "Could not load texture" << std::endl;
+        return 1;
+    }
+    sf::Texture texture2;
+    if (!texture2.loadFromFile("Meta.png")) {
+        std::cerr << "Could not load texture" << std::endl;
+        return 1;
+    }
 
 
     vector<kulka> sc;
@@ -146,15 +124,15 @@ int main()
 
 
     for(int i=0;i<8;i++)
-        {
+    {
         s1.setRadius(15);
         s1.setPosition(200+i*80,100);
         s1.setFillColor(sf::Color(10,20,200));
         sc.emplace_back(s1);
-        }
+    }
 
     for(int i=0;i<8;i++)
-        {
+    {
 
         s1.setvxs(200);
         s1.setvys(0);
@@ -162,7 +140,7 @@ int main()
         s1.setPosition(-50,200+i*80);
         s1.setFillColor(sf::Color(10,20,200));
         sc.emplace_back(s1);
-        }
+    }
 
 
 
@@ -173,8 +151,8 @@ int main()
     gracz.setTexture(texture);
     gracz.setPosition(0,0);
     gracz.setScale(0.7,0.7);
-    gracz.setvx(30);
-    gracz.setvy(30);
+    gracz.setvx(300);
+    gracz.setvy(300);
 
     sf::Sprite winsquare;
     winsquare.setTexture(texture2);
@@ -187,91 +165,82 @@ int main()
 
 
 
-     while (window.isOpen()) {
-            float delta=(clock.getElapsedTime().asSeconds());
-            clock.restart();
-            sf::Event event;
-            while (window.pollEvent(event)) {
-                if (event.type == sf::Event::Closed)
-                    window.close();
-            }
+    while (window.isOpen()) {
+        float delta=(clock.getElapsedTime().asSeconds());
+        clock.restart();
+        sf::Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed)
+                window.close();
+        }
 
-            window.clear(sf::Color::Black);
+        window.clear(sf::Color::Black);
 
 
-
-            if(winsquare.getGlobalBounds().intersects(gracz.getGlobalBounds()))
+        window.draw(tlogry);
+        window.draw(winsquare);
+        window.draw(gracz);
+        for (int i=0;i<sc.size();i++)
+        {
+            if(sc[i].getGlobalBounds().intersects(gracz.getGlobalBounds())==true)
             {
+                gracz.setPosition(0,0);
+            }
+        }
+        gracz.step(delta,gracz,sc);
+
+
+        for(int i=0;i<sc.size();i++)
+        {
+            window.draw(sc[i]);
+            sc[i].stepk(delta);
+        }
+
+
+
+        if(winsquare.getGlobalBounds().intersects(gracz.getGlobalBounds()))
+        {
             lvl++;
             gracz.setPosition(0,0);
-            for (int i=0;i!=sc.size();i++) {
-                sc.erase(sc.begin()+i);
-            }
-            }
-            if(lvl==0)
-            {
-
-                window.draw(tlogry);
-                window.draw(winsquare);
-                window.draw(gracz);
-                for(int i=0;i<sc.size();i++)
-                {
-                    window.draw(sc[i]);
-                    sc[i].stepk(delta);
-                }
-                gracz.step(delta,gracz,sc);
-
-            }
-
+            sc.clear();
 
             if(lvl==1)
             {
-                window.draw(tlogry);
-                window.draw(winsquare);
-                window.draw(gracz);
-
-
                 winsquare.setPosition(720,0);
                 for(int i=0;i<3;i++)
-                    {
+                {
                     s1.setvxs(20);
                     s1.setvys(10);
                     s1.setRadius(35);
                     s1.setPosition(-50+i*20,200+i*80);
                     s1.setFillColor(sf::Color(10,20,200));
                     sc.emplace_back(s1);
-                    }
+                }
                 for(int j=0;j!=sc.size();j++){
-                window.draw(sc[j]);
-                sc[j].setvxs(200);
-                sc[j].setvys(0);
-                sc[j].setPosition(-50+j*80,0+j*80);
-                sc[j].stepk(delta);
+                    sc[j].setvxs(200);
+                    sc[j].setvys(0);
+                    sc[j].setPosition(-50+j*80,0+j*80);
+
                 }
 
-
-
-                gracz.step(delta,gracz,sc);
-
-
             }
-
-            if(lvl==2)
-            {
-                window.close();
-            }
-
-
-
-
-
-
-
-
-
-
-            window.display();
         }
+
+        if(lvl==2)
+        {
+            window.close();
+        }
+
+
+
+
+
+
+
+
+
+        window.display();
+    }
 
     return 0;
 }
