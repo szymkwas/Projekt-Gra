@@ -118,6 +118,8 @@ int main()
 
 
     vector<kulka> sc;
+    vector<kulka> sc1;
+
 
     kulka s1;
 
@@ -131,13 +133,13 @@ int main()
         sc.emplace_back(s1);
     }
 
-    for(int i=0;i<8;i++)
+    for(int i=0;i<6;i++)
     {
 
         s1.setvxs(200);
         s1.setvys(0);
         s1.setRadius(15);
-        s1.setPosition(-50,200+i*80);
+        s1.setPosition(-50,180+i*70);
         s1.setFillColor(sf::Color(10,20,200));
         sc.emplace_back(s1);
     }
@@ -187,6 +189,13 @@ int main()
                 gracz.setPosition(0,0);
             }
         }
+        for (int i=0;i<sc1.size();i++)
+        {
+            if(sc1[i].getGlobalBounds().intersects(gracz.getGlobalBounds())==true)
+            {
+                gracz.setPosition(0,0);
+            }
+        }
         gracz.step(delta,gracz,sc);
 
 
@@ -194,6 +203,11 @@ int main()
         {
             window.draw(sc[i]);
             sc[i].stepk(delta);
+        }
+        for(int i=0;i<sc1.size();i++)
+        {
+            window.draw(sc1[i]);
+            sc1[i].stepk(delta);
         }
 
 
@@ -207,22 +221,37 @@ int main()
             if(lvl==1)
             {
                 winsquare.setPosition(720,0);
-                for(int i=0;i<3;i++)
+                for(int i=0;i<9;i++)
                 {
                     s1.setvxs(20);
                     s1.setvys(10);
-                    s1.setRadius(35);
-                    s1.setPosition(-50+i*20,200+i*80);
+                    s1.setRadius(20);
+                    s1.setPosition(0,0);
                     s1.setFillColor(sf::Color(10,20,200));
                     sc.emplace_back(s1);
                 }
                 for(int j=0;j!=sc.size();j++){
                     sc[j].setvxs(200);
                     sc[j].setvys(0);
-                    sc[j].setPosition(-50+j*80,0+j*80);
+                    sc[j].setPosition(0,0+j*90);
 
                 }
 
+                for(int i=0;i<7;i++)
+                {
+                    s1.setvxs(20);
+                    s1.setvys(10);
+                    s1.setRadius(20);
+                    s1.setPosition(150,0);
+                    s1.setFillColor(sf::Color(10,20,200));
+                    sc1.emplace_back(s1);
+                }
+                for(int j=0;j!=sc1.size();j++){
+                    sc1[j].setvxs(200);
+                    sc1[j].setvys(0);
+                    sc1[j].setPosition(170,35+j*100);
+
+                }
             }
         }
 
