@@ -52,13 +52,62 @@ public:
         }
     }
 };
+class ostrze:public sf::Sprite
+{
+private:
+    float vx=0;
+    float vy=-200;
+    float angle=0;
+
+public:
+    ostrze():sf::Sprite(){}
+
+    sf::FloatRect get_bounds(){
+        return getGlobalBounds();
+    }
+    void setvxs(float vx1)
+    {
+        vx=vx1;
+    }
+    void setvys(float vy1)
+    {
+        vy=vy1;
+    }
+    void setangle(float ang)
+    {
+        angle=ang;
+    }
+    void stepk(float d)
+    {
+        move(vx*d,vy*d);
+        rotate(angle*d);
+        if(get_bounds().top+get_bounds().height>600)
+        {
+            vy=-abs(vy);
+
+        }
+        else if(get_bounds().top<0)
+        {
+            vy=abs(vy);
+
+        }
+        else if(get_bounds().left<0)
+        {
+            vx=abs(vx);
+        }
+        else if(get_bounds().left+get_bounds().width>800)
+        {
+            vx=-abs(vx);
+
+        }
+    }
+};
 
 class player:public sf::Sprite
 {
 private:
     float v_y_;
     float v_x_;
-    vector<kulka> s;
 public:
     player():sf::Sprite(){}
 
@@ -70,7 +119,7 @@ public:
     {
         v_y_=vy;
     }
-    void step(float d,player &p,vector<kulka>&s)
+    void step(float d,player &p)
     {
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)&& p.getGlobalBounds().top+p.getGlobalBounds().height<600)
                 {
@@ -99,19 +148,25 @@ public:
 
 int main()
 {
-    int lvl =0;
-
+    int lvl = 0;
+    int licznik = 0;
 
 
     sf::RenderWindow window(sf::VideoMode(800, 600), "The hardest game");
     sf::Clock clock;
+
     sf::Texture texture;
     if (!texture.loadFromFile("hero.png")) {
         std::cerr << "Could not load texture" << std::endl;
         return 1;
     }
+    sf::Texture texture1;
+    if (!texture1.loadFromFile("Meta.png")) {
+        std::cerr << "Could not load texture" << std::endl;
+        return 1;
+    }
     sf::Texture texture2;
-    if (!texture2.loadFromFile("Meta.png")) {
+    if (!texture2.loadFromFile("ostrze.png")) {
         std::cerr << "Could not load texture" << std::endl;
         return 1;
     }
@@ -119,9 +174,12 @@ int main()
 
     vector<kulka> sc;
     vector<kulka> sc1;
+    vector<ostrze> os;
 
 
     kulka s1;
+    ostrze o1;
+    o1.setTexture(texture2);
 
 
 
@@ -157,7 +215,7 @@ int main()
     gracz.setvy(300);
 
     sf::Sprite winsquare;
-    winsquare.setTexture(texture2);
+    winsquare.setTexture(texture1);
     winsquare.setPosition(720,520);
 
 
@@ -168,7 +226,7 @@ int main()
 
 
     while (window.isOpen()) {
-        float delta=(clock.getElapsedTime().asSeconds());
+        float delta=clock.getElapsedTime().asSeconds();
         clock.restart();
         sf::Event event;
         while (window.pollEvent(event)) {
@@ -186,6 +244,7 @@ int main()
         {
             if(sc[i].getGlobalBounds().intersects(gracz.getGlobalBounds())==true)
             {
+                licznik++;
                 gracz.setPosition(0,0);
             }
         }
@@ -193,10 +252,19 @@ int main()
         {
             if(sc1[i].getGlobalBounds().intersects(gracz.getGlobalBounds())==true)
             {
+                licznik++;
                 gracz.setPosition(0,0);
             }
         }
-        gracz.step(delta,gracz,sc);
+        for (int i=0;i<os.size();i++)
+        {
+            if(os[i].getGlobalBounds().intersects(gracz.getGlobalBounds())==true)
+            {
+                licznik++;
+                gracz.setPosition(0,0);
+            }
+        }
+        gracz.step(delta,gracz);
 
 
         for(int i=0;i<sc.size();i++)
@@ -209,6 +277,11 @@ int main()
             window.draw(sc1[i]);
             sc1[i].stepk(delta);
         }
+        for(int i=0;i<os.size();i++)
+        {
+            window.draw(os[i]);
+            os[i].stepk(delta);
+        }
 
 
 
@@ -217,14 +290,13 @@ int main()
             lvl++;
             gracz.setPosition(0,0);
             sc.clear();
-
+            sc1.clear();
+            os.clear();
             if(lvl==1)
             {
                 winsquare.setPosition(720,0);
                 for(int i=0;i<9;i++)
                 {
-                    s1.setvxs(20);
-                    s1.setvys(10);
                     s1.setRadius(20);
                     s1.setPosition(0,0);
                     s1.setFillColor(sf::Color(10,20,200));
@@ -239,8 +311,6 @@ int main()
 
                 for(int i=0;i<7;i++)
                 {
-                    s1.setvxs(20);
-                    s1.setvys(10);
                     s1.setRadius(20);
                     s1.setPosition(150,0);
                     s1.setFillColor(sf::Color(10,20,200));
@@ -253,22 +323,53 @@ int main()
 
                 }
             }
+
+            if(lvl==2)
+            {
+                winsquare.setPosition(720,0);
+
+                for(int i=0;i<5;i++)
+                {
+                    o1.setvxs(500);
+                    o1.setvys(200);
+                    o1.setangle(40);
+                    o1.setScale(0.3,0.3);
+                    o1.setPosition(500-i*200,400);
+                    os.emplace_back(o1);
+                }
+                for(int i=0;i<12;i++)
+                {
+                    s1.setRadius(15);
+                    s1.setPosition(0,0);
+                    s1.setFillColor(sf::Color(10,20,200));
+                    sc.emplace_back(s1);
+                }
+                for(int j=0;j!=sc.size();j++){
+                    sc[j].setvxs(0);
+                    sc[j].setvys(600);
+                    sc[j].setPosition(50+j*90,0);
+
+                }
+            }
+            if(lvl==3)
+            {
+                window.close();
+            }
         }
-
-        if(lvl==2)
-        {
-            window.close();
-        }
-
-
-
-
-
-
-
-
-
         window.display();
+    }
+    std::cout<<"Podczas gry zginales: "<<licznik<<" razy"<<std::endl;
+    if(licznik<10)
+    {
+        std::cout<<"WOW! Jestes naprawde dobry!";
+    }
+    if(licznik>10&&licznik<30)
+    {
+        std::cout<<"Stac cie na wiecej!";
+    }
+    if(licznik>30)
+    {
+        std::cout<<"Musisz jeszcze troche pocwiczyc!";
     }
 
     return 0;
