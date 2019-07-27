@@ -5,7 +5,6 @@
 #include <iostream>
 #include <ctime>
 
-
 using namespace std;
 
 class kulka:public sf::CircleShape
@@ -175,7 +174,7 @@ int main()
     vector<kulka> sc;
     vector<kulka> sc1;
     vector<ostrze> os;
-
+    vector<sf::RectangleShape> kolce;
 
     kulka s1;
     ostrze o1;
@@ -223,6 +222,10 @@ int main()
     tlogry.setSize(sf::Vector2f(1000,1000));
     tlogry.setFillColor(sf::Color(150,255,0));
 
+    sf::RectangleShape przeszkoda_z_kolcami;
+
+
+
 
 
     while (window.isOpen()) {
@@ -240,6 +243,7 @@ int main()
         window.draw(tlogry);
         window.draw(winsquare);
         window.draw(gracz);
+
         for (int i=0;i<sc.size();i++)
         {
             if(sc[i].getGlobalBounds().intersects(gracz.getGlobalBounds())==true)
@@ -264,6 +268,15 @@ int main()
                 gracz.setPosition(0,0);
             }
         }
+        for (int i=0;i<kolce.size();i++)
+        {
+            if(kolce[i].getGlobalBounds().intersects(gracz.getGlobalBounds())==true)
+            {
+                licznik++;
+                gracz.setPosition(0,0);
+            }
+        }
+
         gracz.step(delta,gracz);
 
 
@@ -282,6 +295,10 @@ int main()
             window.draw(os[i]);
             os[i].stepk(delta);
         }
+        for(int i=0;i<kolce.size();i++)
+        {
+            window.draw(kolce[i]);
+        }
 
 
 
@@ -292,35 +309,35 @@ int main()
             sc.clear();
             sc1.clear();
             os.clear();
+            kolce.clear();
             if(lvl==1)
             {
                 winsquare.setPosition(720,0);
+
+                przeszkoda_z_kolcami.setSize(sf::Vector2f(100,100));
+                przeszkoda_z_kolcami.setFillColor(sf::Color(0,0,250));
+                przeszkoda_z_kolcami.setPosition(300,0);
+                kolce.emplace_back(przeszkoda_z_kolcami);
+
                 for(int i=0;i<9;i++)
                 {
                     s1.setRadius(20);
                     s1.setPosition(0,0);
                     s1.setFillColor(sf::Color(10,20,200));
+                    s1.setvxs(500);
+                    s1.setvys(0);
+                    s1.setPosition(0,100+i*90);
                     sc.emplace_back(s1);
                 }
-                for(int j=0;j!=sc.size();j++){
-                    sc[j].setvxs(200);
-                    sc[j].setvys(0);
-                    sc[j].setPosition(0,0+j*90);
-
-                }
-
                 for(int i=0;i<7;i++)
                 {
                     s1.setRadius(20);
                     s1.setPosition(150,0);
                     s1.setFillColor(sf::Color(10,20,200));
+                    s1.setvxs(500);
+                    s1.setvys(0);
+                    s1.setPosition(170,135+i*100);
                     sc1.emplace_back(s1);
-                }
-                for(int j=0;j!=sc1.size();j++){
-                    sc1[j].setvxs(200);
-                    sc1[j].setvys(0);
-                    sc1[j].setPosition(170,35+j*100);
-
                 }
             }
 
@@ -328,33 +345,88 @@ int main()
             {
                 winsquare.setPosition(720,0);
 
-                for(int i=0;i<5;i++)
+                for(int i=0;i<6;i++)
                 {
-                    o1.setvxs(500);
-                    o1.setvys(200);
-                    o1.setangle(40);
+                    o1.setangle(300);
                     o1.setScale(0.3,0.3);
-                    o1.setPosition(500-i*200,400);
+                    o1.setPosition(90+i*150,400);
                     os.emplace_back(o1);
                 }
+                for(int i=0;i<6;i++)
+                {
+                    o1.setangle(300);
+                    o1.setScale(0.3,0.3);
+                    o1.setPosition(90+i*150,100);
+                    os.emplace_back(o1);
+                }
+
                 for(int i=0;i<12;i++)
                 {
                     s1.setRadius(15);
                     s1.setPosition(0,0);
                     s1.setFillColor(sf::Color(10,20,200));
+                    s1.setvxs(0);
+                    s1.setvys(600);
+                    s1.setPosition(50+i*90,0);
                     sc.emplace_back(s1);
-                }
-                for(int j=0;j!=sc.size();j++){
-                    sc[j].setvxs(0);
-                    sc[j].setvys(600);
-                    sc[j].setPosition(50+j*90,0);
-
                 }
             }
             if(lvl==3)
             {
+                winsquare.setPosition(720,520);
+
+                for(int i=0;i<7;i++)
+                {
+                    o1.setvxs(0);
+                    o1.setvys(0);
+                    o1.setangle(250);
+                    o1.setScale(0.3,0.3);
+                    o1.setPosition(750-i*115,370);
+                    os.emplace_back(o1);
+                }
+                for(int i=0;i<7
+                    ;i++)
+                {
+                    o1.setvxs(0);
+                    o1.setvys(0);
+                    o1.setangle(250);
+                    o1.setScale(0.3,0.3);
+                    o1.setPosition(750-i*115,550);
+                    os.emplace_back(o1);
+                }
+                for(int i=0;i<3;i++)
+                {
+                    o1.setvxs(0);
+                    o1.setvys(0);
+                    o1.setangle(250);
+                    o1.setScale(0.3,0.3);
+                    o1.setPosition(200,50+i*120);
+                    os.emplace_back(o1);
+                }
+                for(int i=0;i<3;i++)
+                {
+                    o1.setvxs(0);
+                    o1.setvys(0);
+                    o1.setangle(250);
+                    o1.setScale(0.3,0.3);
+                    o1.setPosition(400,50+i*120);
+                    os.emplace_back(o1);
+                }
+                for(int i=0;i<3;i++)
+                {
+                    o1.setvxs(0);
+                    o1.setvys(0);
+                    o1.setangle(250);
+                    o1.setScale(0.3,0.3);
+                    o1.setPosition(600,50+i*120);
+                    os.emplace_back(o1);
+                }
+            }
+            if(lvl==4)
+            {
                 window.close();
             }
+
         }
         window.display();
     }
